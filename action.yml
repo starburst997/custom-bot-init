@@ -31,6 +31,7 @@ runs:
       with:
         app-id: ${{ inputs.app-id }}
         private-key: ${{ inputs.private-key }}
+        owner: ${{ github.repository_owner }}
 
     - name: Configure git with GitHub App identity
       id: configure-git
@@ -39,8 +40,8 @@ runs:
       env:
         GH_TOKEN: ${{ steps.generate-token.outputs.token }}
       run: |
-        # Get the GitHub App's slug name
-        APP_SLUG=$(gh api "/app" --jq '.slug')
+        # Use the app-slug output from the create-github-app-token action
+        APP_SLUG="${{ steps.generate-token.outputs.app-slug }}"
 
         # Set bot identity
         BOT_NAME="${APP_SLUG}[bot]"
