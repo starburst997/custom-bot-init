@@ -137,7 +137,7 @@ runs:
 
         # Set bot identity
         BOT_NAME="${BOT_IDENTIFIER}[bot]"
-        BOT_EMAIL="${{ inputs.app-id }}+${APP_SLUG}[bot]@users.noreply.github.com"
+        BOT_EMAIL="${{ inputs.app-id }}+${APP_SLUG}@users.noreply.github.com"
 
         # Configure git with the app's identity
         git config --global user.name "${BOT_NAME}"
