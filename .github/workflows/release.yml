@@ -11,12 +11,21 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Initialize custom bot
         id: bot
         uses: ./
         with:
           app-id: ${{ secrets.BOT_ID }}
           private-key: ${{ secrets.BOT_KEY }}
+
+      - name: Clean workspace with git
+        run: |
+          git clean -fdx
+          git reset --hard
 
       - uses: actions/checkout@v4
         with:
