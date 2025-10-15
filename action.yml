@@ -9,6 +9,10 @@ inputs:
   private-key:
     description: "GitHub App private key"
     required: false
+  use-app-name:
+    description: "Use the GitHub App display name instead of slug (default: false)"
+    required: false
+    default: "true"
 
 outputs:
   token:
@@ -24,6 +28,78 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Get GitHub App name
+      id: get-app-name
+      if: ${{ inputs.app-id != '' && inputs.private-key != '' && inputs.use-app-name == 'true' }}
+      shell: bash
+      run: |
+        # Create a temporary script to generate JWT and get app name
+        cat << 'SCRIPT' > /tmp/get_app_name.js
+        const crypto = require('crypto');
+        const https = require('https');
+
+        const appId = process.env.APP_ID;
+        const privateKey = process.env.PRIVATE_KEY;
+
+        // Generate JWT
+        const now = Math.floor(Date.now() / 1000);
+        const payload = {
+          iat: now - 60,
+          exp: now + 600,
+          iss: appId
+        };
+
+        const header = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64url');
+        const payloadEncoded = Buffer.from(JSON.stringify(payload)).toString('base64url');
+        const data = `${header}.${payloadEncoded}`;
+
+        const sign = crypto.createSign('RSA-SHA256');
+        sign.update(data);
+        const signature = sign.sign(privateKey, 'base64url');
+        const jwt = `${data}.${signature}`;
+
+        // Make API call to get app info
+        const options = {
+          hostname: 'api.github.com',
+          path: '/app',
+          method: 'GET',
+          headers: {
+            'Accept': 'application/vnd.github.v3+json',
+            'Authorization': `Bearer ${jwt}`,
+            'User-Agent': 'GitHub-Action'
+          }
+        };
+
+        https.get(options, (res) => {
+          let data = '';
+          res.on('data', (chunk) => { data += chunk; });
+          res.on('end', () => {
+            try {
+              const app = JSON.parse(data);
+              console.log(app.name || '');
+            } catch (e) {
+              console.error('Failed to parse response');
+              process.exit(1);
+            }
+          });
+        }).on('error', (e) => {
+          console.error('Request failed:', e);
+          process.exit(1);
+        });
+        SCRIPT
+
+        # Run the script to get app name
+        APP_NAME=$(APP_ID="${{ inputs.app-id }}" PRIVATE_KEY="${{ inputs.private-key }}" node /tmp/get_app_name.js 2>/dev/null || echo "")
+        rm -f /tmp/get_app_name.js
+
+        if [[ -n "$APP_NAME" ]]; then
+          echo "app-name=${APP_NAME}" >> $GITHUB_OUTPUT
+          echo "📝 Retrieved app name: ${APP_NAME}"
+        else
+          echo "app-name=" >> $GITHUB_OUTPUT
+          echo "⚠️ Could not retrieve app name"
+        fi
+
     - name: Generate GitHub App token
       id: generate-token
       if: ${{ inputs.app-id != '' && inputs.private-key != '' }}
@@ -43,8 +119,21 @@ runs:
         # Use the app-slug output from the create-github-app-token action
         APP_SLUG="${{ steps.generate-token.outputs.app-slug }}"
 
+        # Determine which name to use
+        if [[ "${{ inputs.use-app-name }}" == "true" ]] && [[ -n "${{ steps.get-app-name.outputs.app-name }}" ]]; then
+          # Use the display name if we successfully retrieved it
+          BOT_IDENTIFIER="${{ steps.get-app-name.outputs.app-name }}"
+          echo "📝 Using app display name: ${BOT_IDENTIFIER}"
+        else
+          # Use slug (default or fallback)
+          BOT_IDENTIFIER="${APP_SLUG}"
+          if [[ "${{ inputs.use-app-name }}" == "true" ]]; then
+            echo "⚠️ Falling back to app slug: ${APP_SLUG}"
+          fi
+        fi
+
         # Set bot identity
-        BOT_NAME="${APP_SLUG}[bot]"
+        BOT_NAME="${BOT_IDENTIFIER}[bot]"
         BOT_EMAIL="${{ inputs.app-id }}+${APP_SLUG}[bot]@users.noreply.github.com"
 
         # Configure git with the app's identity
