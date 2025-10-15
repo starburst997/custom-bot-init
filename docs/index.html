@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Bot Init - GitHub Action</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .hero-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: -1;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      header {
+        padding: 2rem 0;
+        text-align: center;
+        color: white;
+      }
+
+      .hero {
+        padding: 4rem 0 6rem;
+        text-align: center;
+        color: white;
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0.9));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .tagline {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 0.875rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+      }
+
+      .btn-secondary:hover {
+        background: white;
+        color: #667eea;
+      }
+
+      .features-section {
+        background: white;
+        border-radius: 20px 20px 0 0;
+        padding: 5rem 0;
+        margin-top: -2rem;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2.5rem;
+        margin-top: 3rem;
+      }
+
+      .feature {
+        text-align: center;
+        padding: 1.5rem;
+      }
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 1.5rem;
+        color: white;
+      }
+
+      .feature h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        color: #333;
+      }
+
+      .feature p {
+        color: #666;
+        line-height: 1.7;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 1rem;
+      }
+
+      .section-subtitle {
+        text-align: center;
+        color: #666;
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .usage-section {
+        padding: 5rem 0;
+        background: white;
+      }
+
+      .code-block {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 1.5rem;
+        border-radius: 10px;
+        overflow-x: auto;
+        margin-top: 2rem;
+        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        white-space: pre;
+      }
+
+      .code-block .comment {
+        color: #6a9955;
+      }
+
+      .code-block .keyword {
+        color: #c586c0;
+      }
+
+      .code-block .key {
+        color: #9cdcfe;
+      }
+
+      .code-block .value {
+        color: #ce9178;
+      }
+
+      .docs-section {
+        padding: 5rem 0;
+        background: #f8f9fa;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 2rem;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      th {
+        background: #667eea;
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+      }
+
+      td {
+        padding: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      tr:hover {
+        background: #f8f9fa;
+      }
+
+      code {
+        background: #f8f9fa;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-size: 0.9em;
+        color: #667eea;
+      }
+
+      footer {
+        background: #f8f9fa;
+        padding: 3rem 0;
+        text-align: center;
+        color: #666;
+      }
+
+      footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.5rem;
+        }
+
+        .tagline {
+          font-size: 1.2rem;
+        }
+
+        .features {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        table {
+          font-size: 0.9rem;
+        }
+
+        th,
+        td {
+          padding: 0.75rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero-background"></div>
+
+    <header>
+      <div class="container">
+        <nav>
+          <a
+            href="https://github.com/starburst997/custom-bot-init"
+            class="btn btn-secondary"
+          >
+            View on GitHub →
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="container">
+        <h1>Custom Bot Init</h1>
+        <p class="tagline">
+          Initialize GitHub App bots with proper git configuration in seconds
+        </p>
+      </div>
+    </section>
+
+    <section class="features-section">
+      <div class="container">
+        <h2 class="section-title">Key Features</h2>
+        <p class="section-subtitle">
+          Simple, automatic bot configuration for GitHub workflows
+        </p>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">🤖</div>
+            <h3>Zero Configuration</h3>
+            <p>
+              Automatically configures git with your bot's identity using the GitHub App slug
+            </p>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">🔐</div>
+            <h3>Secure Tokens</h3>
+            <p>
+              Generates GitHub App tokens securely for API calls and git operations
+            </p>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <h3>Optional & Fast</h3>
+            <p>
+              Skips automatically when credentials aren't provided. No errors, no hassle
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="usage-section">
+      <div class="container">
+        <h2 class="section-title">Quick Start</h2>
+        <p class="section-subtitle">Add to your workflow in one step</p>
+
+        <div class="code-block">- <span class="key">uses</span>: <span class="value">starburst997/custom-bot-init@v1</span>
+  <span class="key">id</span>: <span class="value">bot</span>
+  <span class="keyword">with</span>:
+    <span class="key">app-id</span>: <span class="value">${{ secrets.BOT_ID }}</span>
+    <span class="key">private-key</span>: <span class="value">${{ secrets.BOT_KEY }}</span></div>
+
+        <h3 style="margin-top: 3rem; font-size: 1.8rem; color: #333">
+          Complete Example
+        </h3>
+        <div class="code-block"><span class="key">name</span>: <span class="value">Bot Workflow</span>
+
+<span class="key">on</span>: [<span class="value">push</span>]
+
+<span class="key">jobs</span>:
+  <span class="key">auto-commit</span>:
+    <span class="key">runs-on</span>: <span class="value">ubuntu-latest</span>
+    <span class="key">steps</span>:
+      - <span class="key">uses</span>: <span class="value">actions/checkout@v4</span>
+
+      - <span class="key">uses</span>: <span class="value">starburst997/custom-bot-init@v1</span>
+        <span class="key">id</span>: <span class="value">bot</span>
+        <span class="keyword">with</span>:
+          <span class="key">app-id</span>: <span class="value">${{ secrets.BOT_ID }}</span>
+          <span class="key">private-key</span>: <span class="value">${{ secrets.BOT_KEY }}</span>
+
+      - <span class="key">run</span>: |
+          <span class="comment"># Your bot is now configured!</span>
+          echo "Bot: ${{ steps.bot.outputs.name }}"
+          echo "Email: ${{ steps.bot.outputs.email }}"
+
+          <span class="comment"># Make changes and commit as the bot</span>
+          npm run format
+          git add -A
+          git commit -m "Auto-format code"
+          git push</div>
+      </div>
+    </section>
+
+    <section class="docs-section">
+      <div class="container">
+        <h2 class="section-title">Documentation</h2>
+
+        <h3 style="margin-top: 3rem; font-size: 1.8rem; color: #333">
+          Inputs
+        </h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Input</th>
+              <th>Description</th>
+              <th>Required</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>app-id</code></td>
+              <td>GitHub App ID</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td><code>private-key</code></td>
+              <td>GitHub App private key</td>
+              <td>No</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 style="margin-top: 3rem; font-size: 1.8rem; color: #333">
+          Outputs
+        </h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Output</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>token</code></td>
+              <td>Generated GitHub App token for API calls</td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>Configured git user name (format: <code>app-slug[bot]</code>)</td>
+            </tr>
+            <tr>
+              <td><code>email</code></td>
+              <td>Configured git user email (format: <code>id+slug[bot]@users.noreply.github.com</code>)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <p>
+          <a href="https://github.com/starburst997/custom-bot-init">GitHub</a> •
+          <a href="https://github.com/starburst997/custom-bot-init/issues">Issues</a> •
+          <a href="https://github.com/marketplace/actions/custom-bot-init">Marketplace</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
