@@ -135,9 +135,19 @@ runs:
           fi
         fi
 
-        # Set bot identity
+        # Get the bot user ID (different from app ID!)
+        BOT_USER_ID=$(gh api "/users/${APP_SLUG}[bot]" --jq .id 2>/dev/null || echo "")
+
+        if [[ -z "$BOT_USER_ID" ]]; then
+          echo "⚠️ Could not retrieve bot user ID, using app ID as fallback"
+          BOT_USER_ID="${{ inputs.app-id }}"
+        else
+          echo "📝 Retrieved bot user ID: ${BOT_USER_ID}"
+        fi
+
+        # Set bot identity with correct user ID
         BOT_NAME="${BOT_IDENTIFIER}[bot]"
-        BOT_EMAIL="${{ inputs.app-id }}+${APP_SLUG}@users.noreply.github.com"
+        BOT_EMAIL="${BOT_USER_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
 
         # Configure git with the app's identity
         git config --global user.name "${BOT_NAME}"
@@ -147,4 +157,4 @@ runs:
         echo "name=${BOT_NAME}" >> $GITHUB_OUTPUT
         echo "email=${BOT_EMAIL}" >> $GITHUB_OUTPUT
 
-        echo "✅ Configured git for bot: ${BOT_NAME}"
+        echo "✅ Configured git for bot: ${BOT_NAME} <${BOT_EMAIL}>"
