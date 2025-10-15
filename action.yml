@@ -1,6 +1,9 @@
 name: "Custom Bot Init"
 description: "Initialize a GitHub App bot with proper git configuration"
 author: "starburst997"
+branding:
+  icon: "user-check"
+  color: "blue"
 
 inputs:
   app-id:
