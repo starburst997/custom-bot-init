@@ -20,7 +20,7 @@ inputs:
 outputs:
   token:
     description: "Generated GitHub App token"
-    value: ${{ steps.generate-token.outputs.token }}
+    value: ${{ steps.generate-token.outputs.token || github.token }}
   name:
     description: "Configured git user name"
     value: ${{ steps.configure-git.outputs.name }}
