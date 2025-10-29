@@ -15,6 +15,7 @@ A GitHub Action to initialize and configure a GitHub App bot for use in workflow
     echo "Bot configured as: ${{ steps.bot.outputs.name }}"
     echo "Bot email: ${{ steps.bot.outputs.email }}"
     echo "Bot user ID: ${{ steps.bot.outputs.user-id }}"
+    echo "Bot slug: ${{ steps.bot.outputs.slug }}"
 ```
 
 ## Inputs
@@ -32,6 +33,7 @@ A GitHub Action to initialize and configure a GitHub App bot for use in workflow
 | `name`    | Configured git user name   |
 | `email`   | Configured git user email  |
 | `user-id` | Bot user ID                |
+| `slug`    | GitHub App slug            |
 
 ## What it does
 
