@@ -363,6 +363,7 @@
           <span class="comment"># Your bot is now configured!</span>
           echo "Bot: ${{ steps.bot.outputs.name }}"
           echo "Email: ${{ steps.bot.outputs.email }}"
+          echo "User ID: ${{ steps.bot.outputs.user-id }}"
 
           <span class="comment"># Make changes and commit as the bot</span>
           npm run format
@@ -423,6 +424,10 @@
             <tr>
               <td><code>email</code></td>
               <td>Configured git user email (format: <code>id+slug[bot]@users.noreply.github.com</code>)</td>
+            </tr>
+            <tr>
+              <td><code>user-id</code></td>
+              <td>Bot user ID</td>
             </tr>
           </tbody>
         </table>

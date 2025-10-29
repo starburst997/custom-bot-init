@@ -27,6 +27,9 @@ outputs:
   email:
     description: "Configured git user email"
     value: ${{ steps.configure-git.outputs.email }}
+  user-id:
+    description: "Bot user ID"
+    value: ${{ steps.configure-git.outputs.user-id }}
 
 runs:
   using: "composite"
@@ -156,5 +159,6 @@ runs:
         # Set outputs
         echo "name=${BOT_NAME}" >> $GITHUB_OUTPUT
         echo "email=${BOT_EMAIL}" >> $GITHUB_OUTPUT
+        echo "user-id=${BOT_USER_ID}" >> $GITHUB_OUTPUT
 
         echo "✅ Configured git for bot: ${BOT_NAME} <${BOT_EMAIL}>"
